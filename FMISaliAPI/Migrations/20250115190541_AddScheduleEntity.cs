@@ -23,7 +23,7 @@ namespace FMISaliAPI.Migrations
                     Type = table.Column<string>(type: "text", nullable: false),
                     Start = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     End = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Status = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: true),
                     Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Reason = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true)
                 },

@@ -19,6 +19,8 @@ namespace FMISaliAPI.Models
 
         // ReSharper disable once CollectionNeverUpdated.Global
         public ICollection<RoomFacility>? RoomFacilities { get; set; } = new List<RoomFacility>();
+
+        public ICollection<Schedule>? Schedules { get; set; } = new List<Schedule>();
     }
 
     public enum RoomType

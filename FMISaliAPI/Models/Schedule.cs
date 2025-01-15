@@ -1,6 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using Microsoft.Build.Framework;
 
 namespace FMISaliAPI.Models
 {
@@ -22,7 +20,7 @@ namespace FMISaliAPI.Models
 
         public required DateTime End { get; set; }
 
-        public Status Status { get; set; }
+        public Status? Status { get; set; }
 
         [MaxLength(255)]
         public string? Description { get; set; }

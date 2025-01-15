@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FMISaliAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250115175929_AddScheduleEntity")]
+    [Migration("20250115190541_AddScheduleEntity")]
     partial class AddScheduleEntity
     {
         /// <inheritdoc />
@@ -108,7 +108,6 @@ namespace FMISaliAPI.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Type")

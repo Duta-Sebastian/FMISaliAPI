@@ -105,7 +105,6 @@ namespace FMISaliAPI.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Type")
