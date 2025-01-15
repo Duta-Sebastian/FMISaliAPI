@@ -1,0 +1,26 @@
+﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
+
+namespace FMISaliAPI.Models
+{
+    public class Room
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int Capacity { get; set; }
+
+        [JsonConverter(typeof(JsonStringEnumConverter<RoomType>))]
+        public RoomType Type { get; set; }
+
+    }
+
+    public enum RoomType
+    {
+        [EnumMember(Value = "Sala de seminar")]
+        Seminar,
+        [EnumMember(Value = "Amfiteatru")]
+        Amfiteatru,
+        [EnumMember(Value = "Laborator")]
+        Laborator
+    }
+}

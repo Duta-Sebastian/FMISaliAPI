@@ -1,0 +1,6 @@
+@FMISaliAPI_HostAddress = http://localhost:5237
+
+GET {{FMISaliAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
