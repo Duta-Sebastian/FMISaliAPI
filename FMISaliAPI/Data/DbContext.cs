@@ -11,6 +11,11 @@
 
             public DbSet<RoomFacility> RoomFacilities { get; set; }
 
+            public DbSet<User> Users { get; set; }
+
+            public DbSet<Schedule> Schedules { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
@@ -28,6 +33,30 @@
 
                 modelBuilder.Entity<RoomFacility>()
                     .HasKey(rf => new { rf.RoomId, rf.FacilityId });
-            }
+
+                modelBuilder.Entity<Schedule>()
+                    .HasOne(s => s.User)
+                    .WithMany()
+                    .HasForeignKey(s => s.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<Schedule>()
+                    .HasOne(s => s.Room)
+                    .WithMany()
+                    .HasForeignKey(s => s.RoomId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<Schedule>()
+                    .Property(s => s.Status)
+                    .HasConversion(
+                        s => s.ToString(),
+                        s => Enum.Parse<Status>(s));
+
+                modelBuilder.Entity<Schedule>()
+                    .Property(s => s.Type)
+                    .HasConversion(
+                        t => t.ToString(),
+                        t => Enum.Parse<ScheduleType>(t));
+        }
         }
     }

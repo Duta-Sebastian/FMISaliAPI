@@ -3,9 +3,9 @@
     public class RoomFacility
     {
         public int FacilityId { get; set; }
-        public Facility Facility { get; set; }
+        public required Facility Facility { get; set; }
 
         public int RoomId { get; set; }
-        public Room Room { get; set; }
+        public required Room Room { get; set; }
     }
 }

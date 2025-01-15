@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FMISaliAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250115145634_Initial")]
-    partial class Initial
+    [Migration("20250115175855_AddUserEntity")]
+    partial class AddUserEntity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -54,7 +54,8 @@ namespace FMISaliAPI.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -80,16 +81,34 @@ namespace FMISaliAPI.Migrations
                     b.ToTable("RoomFacilities");
                 });
 
+            modelBuilder.Entity("FMISaliAPI.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Users");
+                });
+
             modelBuilder.Entity("FMISaliAPI.Models.RoomFacility", b =>
                 {
                     b.HasOne("FMISaliAPI.Models.Facility", "Facility")
-                        .WithMany()
+                        .WithMany("RoomFacilities")
                         .HasForeignKey("FacilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("FMISaliAPI.Models.Room", "Room")
-                        .WithMany()
+                        .WithMany("RoomFacilities")
                         .HasForeignKey("RoomId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -97,6 +116,16 @@ namespace FMISaliAPI.Migrations
                     b.Navigation("Facility");
 
                     b.Navigation("Room");
+                });
+
+            modelBuilder.Entity("FMISaliAPI.Models.Facility", b =>
+                {
+                    b.Navigation("RoomFacilities");
+                });
+
+            modelBuilder.Entity("FMISaliAPI.Models.Room", b =>
+                {
+                    b.Navigation("RoomFacilities");
                 });
 #pragma warning restore 612, 618
         }
