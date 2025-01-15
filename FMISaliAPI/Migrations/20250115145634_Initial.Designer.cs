@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FMISaliAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250115140453_Facilities")]
-    partial class Facilities
+    [Migration("20250115145634_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -32,11 +32,9 @@ namespace FMISaliAPI.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("NumarCalculatoare")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Type")
-                        .HasColumnType("integer");
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -65,6 +63,40 @@ namespace FMISaliAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Rooms");
+                });
+
+            modelBuilder.Entity("FMISaliAPI.Models.RoomFacility", b =>
+                {
+                    b.Property<int>("RoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("FacilityId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("RoomId", "FacilityId");
+
+                    b.HasIndex("FacilityId");
+
+                    b.ToTable("RoomFacilities");
+                });
+
+            modelBuilder.Entity("FMISaliAPI.Models.RoomFacility", b =>
+                {
+                    b.HasOne("FMISaliAPI.Models.Facility", "Facility")
+                        .WithMany()
+                        .HasForeignKey("FacilityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("FMISaliAPI.Models.Room", "Room")
+                        .WithMany()
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Facility");
+
+                    b.Navigation("Room");
                 });
 #pragma warning restore 612, 618
         }

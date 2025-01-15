@@ -9,7 +9,9 @@
 
             public DbSet<Facility> Facilities { get; set; }
 
-            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            public DbSet<RoomFacility> RoomFacilities { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
                 modelBuilder.Entity<Room>()
@@ -23,6 +25,9 @@
                     .HasConversion(
                         v => v.ToString(),
                         v => Enum.Parse<FacilityType>(v));
+
+                modelBuilder.Entity<RoomFacility>()
+                    .HasKey(rf => new { rf.RoomId, rf.FacilityId });
             }
         }
     }

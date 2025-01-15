@@ -9,8 +9,7 @@ namespace FMISaliAPI.Models
         [JsonConverter(typeof(JsonStringEnumConverter<RoomType>))]
         public FacilityType Type { get; set; }
 
-        public int NumarCalculatoare { get; set; }
-
+        public ICollection<RoomFacility> RoomFacilities { get; set; } = new List<RoomFacility>();
     }
 
     public enum FacilityType
