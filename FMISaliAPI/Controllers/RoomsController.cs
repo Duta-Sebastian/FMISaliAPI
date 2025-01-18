@@ -7,7 +7,7 @@ namespace FMISaliAPI.Controllers
 {
     [Route("api/rooms")]
     [ApiController]
-    public class RoomsController(ApplicationDbContext context) : ControllerBase   
+    public class RoomsController(ApplicationDbContext context) : ControllerBase
     {
         // POST: api/rooms
         [HttpPost("add")]
@@ -142,6 +142,27 @@ namespace FMISaliAPI.Controllers
             catch (Exception e)
             {
                 return BadRequest(e);
+            }
+        }
+
+        [HttpGet("getMinMaxCapacity")]
+        public async Task<IActionResult> GetMinMaxCapacity()
+        {
+            try
+            {
+                var minCapacity = await context.Rooms
+                    .MinAsync(r => r.Capacity);
+                var maxCapacity = await context.Rooms
+                    .MaxAsync(r => r.Capacity);
+                return Ok(new
+                {
+                    maxCapacity = maxCapacity,
+                    minCapacity = minCapacity
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
     }

@@ -1,5 +1,6 @@
 ﻿    using FMISaliAPI.Models;
     using Microsoft.EntityFrameworkCore;
+    using File = FMISaliAPI.Models.File;
 
     namespace FMISaliAPI.Data
     {
@@ -14,6 +15,8 @@
             public DbSet<User> Users { get; set; }
 
             public DbSet<Schedule> Schedules { get; set; }
+
+            public DbSet<File> Files { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -57,6 +60,15 @@
                     .HasConversion(
                         t => t.ToString(),
                         t => Enum.Parse<ScheduleType>(t));
-        }
+
+                modelBuilder.Entity<File>()
+                    .Property(f => f.FileData)
+                    .HasColumnType("bytea");
+
+                modelBuilder.Entity<File>()
+                    .Property(f => f.UploadedOn)
+                    .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            }
         }
     }
