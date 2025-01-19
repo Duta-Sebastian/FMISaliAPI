@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FMISaliAPI.Controllers
 {
-    [Microsoft.AspNetCore.Components.Route("api/facilities")]
+    [Route("api/facilities")]
     [ApiController]
     public class FacilitiesController: ControllerBase
     {
