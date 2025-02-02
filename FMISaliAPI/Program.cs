@@ -27,6 +27,18 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+    // Ensure the database is created and migrated
+    dbContext.Database.Migrate();
+
+    // Seed schedules
+    var seeder = new RoomScheduleSeed(dbContext);
+    seeder.SeedSchedules();
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

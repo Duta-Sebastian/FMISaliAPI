@@ -1,5 +1,4 @@
-﻿using FMISaliAPI.Data;
-using FMISaliAPI.Services;
+﻿using FMISaliAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FMISaliAPI.Controllers
