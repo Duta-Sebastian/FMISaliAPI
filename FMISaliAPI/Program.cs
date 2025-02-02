@@ -3,10 +3,8 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddSwaggerGen();
@@ -31,12 +29,13 @@ using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-    // Ensure the database is created and migrated
     dbContext.Database.Migrate();
 
-    // Seed schedules
-    var seeder = new RoomScheduleSeed(dbContext);
-    seeder.SeedSchedules();
+    if ( app.Environment.IsDevelopment())
+    {
+        var seeder = new RoomScheduleSeed(dbContext);
+        seeder.SeedSchedules();
+    }
 }
 
 // Configure the HTTP request pipeline.

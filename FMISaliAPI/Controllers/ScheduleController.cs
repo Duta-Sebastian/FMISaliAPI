@@ -13,21 +13,18 @@ namespace FMISaliAPI.Controllers
         [HttpGet("events")]
         public async Task<IActionResult> GetEvents(string roomName, DateTime? start, DateTime? end)
         {
-            // Fetch schedules for the specified room
             var schedules = await context.Schedules
                 .Include(s => s.Room)
                 .Where(s => s.Room.Name == roomName)
                 .Select(s => s)
                 .ToListAsync();
 
-            // Generate calendar events
             var events = new List<CalendarEvent>();
             foreach (var schedule in schedules)
             {
                 events.AddRange(ScheduleService.GenerateCalendarEvents(schedule));
             }
 
-            // Filter events by the provided date range (if any)
             if (start.HasValue && end.HasValue)
             {
                 events = events

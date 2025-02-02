@@ -91,7 +91,7 @@ namespace FMISaliAPI.Controllers
                 var rooms = await context.Rooms
                     .Include(r => r.RoomFacilities)!
                     .ThenInclude(rf => rf.Facility)
-                    .Where( r=>
+                    .Where(r =>
                          r.Capacity <= maxCapacity &&
                          r.Capacity >= minCapacity &&
                          r.RoomFacilities != null &&
@@ -121,7 +121,8 @@ namespace FMISaliAPI.Controllers
                 .Where(r => r.Id == id)
                 .Select(r => new
                 {
-                    r.Name, Type = r.Type.ToString()
+                    r.Name,
+                    Type = r.Type.ToString()
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
@@ -190,7 +191,7 @@ namespace FMISaliAPI.Controllers
                     })
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
-                    
+
                 if (capacities is null)
                     throw new Exception("Min and max capacities could not be retrieved!");
                 return Ok(new
