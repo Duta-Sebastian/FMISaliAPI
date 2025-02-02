@@ -1,4 +1,5 @@
 ﻿using FMISaliAPI.Data;
+using FMISaliAPI.DTO;
 using FMISaliAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +8,7 @@ namespace FMISaliAPI.Controllers
 {
     [Route("api/rooms")]
     [ApiController]
-    public class RoomsController(ApplicationDbContext context) : ControllerBase   
+    public class RoomsController(ApplicationDbContext context) : ControllerBase
     {
         // POST: api/rooms
         [HttpPost("add")]
@@ -71,6 +72,48 @@ namespace FMISaliAPI.Controllers
             }
         }
 
+        [HttpPost("getFilteredRooms")]
+        public async Task<IActionResult> GetFilteredRooms([FromBody] RoomFilterRequest request)
+        {
+            var minCapacity = request.MinCapacity;
+            var maxCapacity = request.MaxCapacity;
+            var facilities = request.Facilities;
+            List<FacilityType> formattedFacilities = [];
+            if (facilities != null)
+                foreach (var facility in facilities)
+                {
+                    Enum.TryParse<FacilityType>(facility, false, out var facilityType);
+                    formattedFacilities.Add(facilityType);
+                }
+
+            try
+            {
+                var rooms = await context.Rooms
+                    .Include(r => r.RoomFacilities)!
+                    .ThenInclude(rf => rf.Facility)
+                    .Where( r=>
+                         r.Capacity <= maxCapacity &&
+                         r.Capacity >= minCapacity &&
+                         r.RoomFacilities != null &&
+                         (formattedFacilities.Count == 0 ||
+                          r.RoomFacilities.Any(rf => formattedFacilities.Contains(rf.Facility.Type)))
+                        )
+                    .Select(r => new
+                    {
+                        r.Id,
+                        r.Name,
+                        Type = r.Type.ToString()
+                    })
+                    .AsNoTracking()
+                    .ToListAsync();
+                return Ok(rooms);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetRoom(int id)
         {
@@ -91,7 +134,7 @@ namespace FMISaliAPI.Controllers
             return Ok(room);
         }
 
-        [HttpGet("getAvailableRoomsByDate")]
+        /*[HttpGet("getAvailableRoomsByDate")]
         public async Task<IActionResult> GetAvailableRoomsByDate([FromQuery] DateTime startDate, DateTime endDate)
         {
             try
@@ -112,29 +155,16 @@ namespace FMISaliAPI.Controllers
             {
                 return BadRequest(e.Message);
             }
-        }
+        }*/
 
-        [HttpGet("getRoomScheduleWeek")]
-        public async Task<IActionResult> GetRoomScheduleWeek([FromQuery] DateTime startDate, int roomId)
+        [HttpGet("getRoomSchedule")]
+        public async Task<IActionResult> GetRoomScheduleWeek(string roomName)
         {
             try
             {
                 var roomSchedule = await context.Schedules
-                    .Where(s => s.RoomId == roomId &&
-                                s.Start >= startDate &&
-                                s.Start < startDate.AddDays(7))
-                    .OrderBy(s => s.Start)
-                    .Select(s => new
-                    {
-                        s.Id,
-                        s.RoomId,
-                        s.Start,
-                        s.End,
-                        s.Type,
-                        s.Status,
-                        s.Description,
-                        s.Reason
-                    })
+                    .Include(s => s.Room)
+                    .Where(s => s.Room.Name == roomName)
                     .AsNoTracking()
                     .ToListAsync();
                 return Ok(roomSchedule);
@@ -142,6 +172,36 @@ namespace FMISaliAPI.Controllers
             catch (Exception e)
             {
                 return BadRequest(e);
+            }
+        }
+
+        [HttpGet("getMinMaxCapacity")]
+        public async Task<IActionResult> GetMinMaxCapacity()
+        {
+            try
+            {
+                var capacities = await context.Rooms
+                    .GroupBy(r => 1)
+                    .OrderBy(r => 1)
+                    .Select(g => new
+                    {
+                        MinCapacity = g.Min(r => r.Capacity),
+                        MaxCapacity = g.Max(r => r.Capacity)
+                    })
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync();
+                    
+                if (capacities is null)
+                    throw new Exception("Min and max capacities could not be retrieved!");
+                return Ok(new
+                {
+                    maxCapacity = capacities.MaxCapacity,
+                    minCapacity = capacities.MinCapacity
+                });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
             }
         }
     }

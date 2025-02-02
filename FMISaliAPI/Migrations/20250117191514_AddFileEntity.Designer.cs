@@ -3,6 +3,7 @@ using System;
 using FMISaliAPI.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FMISaliAPI.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250117191514_AddFileEntity")]
+    partial class AddFileEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,21 +124,12 @@ namespace FMISaliAPI.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<TimeOnly>("End")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("End")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Reason")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<int>("Recurrence")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("RecurrenceEndDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("RecurrenceStartDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("RoomId")
                         .HasColumnType("integer");
@@ -143,8 +137,8 @@ namespace FMISaliAPI.Migrations
                     b.Property<int?>("RoomId1")
                         .HasColumnType("integer");
 
-                    b.Property<TimeOnly>("Start")
-                        .HasColumnType("time");
+                    b.Property<DateTime>("Start")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
                         .HasColumnType("text");

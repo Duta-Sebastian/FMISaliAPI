@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FMISaliAPI.Models
 {
@@ -16,9 +17,17 @@ namespace FMISaliAPI.Models
 
         public required ScheduleType Type { get; set; }
 
-        public required DateTime Start { get; set; }
+        [Column(TypeName = "time")]
+        public required TimeOnly Start { get; set; }
 
-        public required DateTime End { get; set; }
+        [Column(TypeName = "time")]
+        public required TimeOnly End { get; set; }
+
+        public RecurrenceType Recurrence { get; set; }
+
+        public DateTime? RecurrenceStartDate { get; set; }
+
+        public DateTime? RecurrenceEndDate { get; set; }
 
         public Status? Status { get; set; }
 
@@ -33,6 +42,14 @@ namespace FMISaliAPI.Models
     {
         Orar,
         Rezervare
+    }
+
+    public enum RecurrenceType
+    {
+        OneTime,
+        Weekly,
+        OddWeeks,
+        EvenWeeks
     }
 
     public enum Status
