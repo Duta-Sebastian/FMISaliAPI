@@ -9,9 +9,11 @@ namespace FMISaliAPI.Services
         {
             var events = new List<CalendarEvent>();
 
-            var currentDate = schedule.RecurrenceStartDate ?? throw new ArgumentNullException(nameof(schedule.RecurrenceStartDate));
+            var currentDate = schedule.RecurrenceStartDate ??
+                              throw new ArgumentNullException(nameof(schedule.RecurrenceStartDate));
 
-            var endDate = schedule.RecurrenceEndDate ?? throw new ArgumentNullException(nameof(schedule.RecurrenceEndDate));
+            var endDate = schedule.RecurrenceEndDate ??
+                          throw new ArgumentNullException(nameof(schedule.RecurrenceEndDate));
 
             var startOfYear = new DateTime(currentDate.Year, 1, 1);
             var startWeekNumber = (currentDate - startOfYear).Days / 7 + 1;
@@ -34,18 +36,17 @@ namespace FMISaliAPI.Services
                 {
                     events.Add(new CalendarEvent
                     {
+                        RoomId = schedule.RoomId,
                         Title = schedule.Description,
                         Start = currentDate.Date + schedule.Start.ToTimeSpan(),
                         End = currentDate.Date + schedule.End.ToTimeSpan()
                     });
                 }
 
-                // Move to the next Monday
                 currentDate = currentDate.AddDays(7);
             }
 
             return events;
         }
-
     }
 }
