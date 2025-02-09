@@ -53,13 +53,13 @@ namespace FMISaliAPI.Controllers
             try
             {
                 var rooms = await context.Rooms
-                    .Include(r => r.RoomFacilities)!
+                    .Include(r => r.RoomFacilities)
                     .ThenInclude(rf => rf.Facility)
                     .Select(r => new
                     {
                         r.Name,
                         Type = r.Type.ToString(),
-                        RoomFacilities = (r.RoomFacilities ?? new List<RoomFacility>())
+                        RoomFacilities = (r.RoomFacilities)
                             .Select(rf => rf.Facility.Type.ToString())
                     })
                     .AsNoTracking()
@@ -79,22 +79,20 @@ namespace FMISaliAPI.Controllers
             var maxCapacity = request.MaxCapacity;
             var facilities = request.Facilities;
             List<FacilityType> formattedFacilities = [];
-            if (facilities != null)
-                foreach (var facility in facilities)
-                {
-                    Enum.TryParse<FacilityType>(facility, false, out var facilityType);
-                    formattedFacilities.Add(facilityType);
-                }
+            foreach (var facility in facilities)
+            {
+                Enum.TryParse<FacilityType>(facility, false, out var facilityType);
+                formattedFacilities.Add(facilityType);
+            }
 
             try
             {
                 var rooms = await context.Rooms
-                    .Include(r => r.RoomFacilities)!
+                    .Include(r => r.RoomFacilities)
                     .ThenInclude(rf => rf.Facility)
                     .Where( r=>
                          r.Capacity <= maxCapacity &&
                          r.Capacity >= minCapacity &&
-                         r.RoomFacilities != null &&
                          (formattedFacilities.Count == 0 ||
                           r.RoomFacilities.Any(rf => formattedFacilities.Contains(rf.Facility.Type)))
                         )

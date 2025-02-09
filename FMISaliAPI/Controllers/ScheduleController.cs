@@ -34,9 +34,17 @@ namespace FMISaliAPI.Controllers
             return Ok(eventList.SelectMany(events => events).ToList());
         }
 
-        [HttpGet("availableRoomsOnDate")]
-        public async Task<IActionResult> GetAvailableRoomsOnDate(DateTime startDate, DateTime endDate)
+        [HttpPost("availableRoomsOnDate")]
+        public async Task<IActionResult> GetAvailableRoomsOnDate([FromBody] RoomAvailabilityRequest roomAvailabilityRequest)
         {
+            var startDate = roomAvailabilityRequest.StartDate;
+            var endDate = roomAvailabilityRequest.EndDate;
+            var roomFilter = roomAvailabilityRequest.RoomFilter;
+            
+            var facilityTypes = roomFilter.Facilities
+                .Select(facility => Enum.Parse<FacilityType>(facility))
+                .ToList();
+            
             var schedules = await context.Schedules
                 .AsNoTracking()
                 .ToListAsync();
@@ -53,24 +61,35 @@ namespace FMISaliAPI.Controllers
                     e.Start <= endDate && e.End >= startDate))
                 .Select(group => group.Key)
                 .ToList();
+            try
+            {
+                var availableRooms = await context.Rooms
+                    .Where(r => !occupiedRooms.Contains(r.Id))
+                    .Include(r => r.RoomFacilities)
+                    .ThenInclude(rf => rf.Facility)
+                    .Where(r =>
+                        r.Capacity >= roomFilter.MinCapacity &&
+                        r.Capacity <= roomFilter.MaxCapacity &&
+                        facilityTypes.All(facilityType =>
+                            r.RoomFacilities
+                                .Select(rf => rf.Facility.Type)
+                                .Contains(facilityType)))
+                    .Select(r => new
+                    {
+                        r.Name,
+                        Type = r.Type.ToString(),
+                        r.Capacity,
+                        Facilities = r.RoomFacilities.Select(rf => rf.Facility.Type.ToString()).ToList()
+                    })
+                    .ToListAsync();
 
-            var availableRooms = await context.Rooms
-                .Where(r => !occupiedRooms.Contains(r.Id))
-                .Include(r => r.RoomFacilities)!
-                .ThenInclude(rf => rf.Facility)
-                .Select(r => new
-                {
-                    r.Name,
-                    Type = r.Type.ToString(),
-                    r.Capacity,
-                    facilities = r.RoomFacilities!
-                        .Select(rf => rf.Facility.Type.ToString())
-                        .ToList()
-                })
-                .ToListAsync();
-
-            return Ok(availableRooms);
-
+                return Ok(availableRooms);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest(e);
+            }
         }
     }
 }
