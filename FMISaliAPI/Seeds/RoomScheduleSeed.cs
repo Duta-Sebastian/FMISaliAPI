@@ -15,7 +15,7 @@ public class RoomScheduleSeed
     public void SeedSchedules()
     {
         var roomId = 3; // Room ID for which schedules are being created
-        var today = DateTime.Today.ToUniversalTime(); // Convert to UTC
+        var today = DateTime.Today.ToUniversalTime().Date; // Convert to UTC
 
         // Fetch the room with Id = 1
         var room = _dbContext.Rooms.FirstOrDefault(r => r.Id == roomId);
@@ -50,8 +50,8 @@ public class RoomScheduleSeed
         {
             RoomId = roomId,
             Room = room, // Assign the Room navigation property
-            Start = TimeOnly.FromTimeSpan(TimeSpan.FromHours(9)), // 09:00
-            End = TimeOnly.FromTimeSpan(TimeSpan.FromHours(11)), // 11:00
+            Start = TimeOnly.FromTimeSpan(TimeSpan.FromHours(16)), // 09:00
+            End = TimeOnly.FromTimeSpan(TimeSpan.FromHours(18)), // 11:00
             Recurrence = RecurrenceType.OddWeeks,
             RecurrenceStartDate = nextMonday,
             RecurrenceEndDate = endDate,

@@ -42,7 +42,7 @@ namespace FMISaliAPI.Controllers
             var roomFilter = roomAvailabilityRequest.RoomFilter;
             
             var facilityTypes = roomFilter.Facilities
-                .Select(facility => Enum.Parse<FacilityType>(facility))
+                .Select(Enum.Parse<FacilityType>)
                 .ToList();
             
             var schedules = await context.Schedules
@@ -58,7 +58,7 @@ namespace FMISaliAPI.Controllers
                 .SelectMany(events => events)
                 .GroupBy(e => e.RoomId)
                 .Where(group => group.Any(e =>
-                    e.Start <= endDate && e.End >= startDate))
+                    e.Start < endDate && e.End > startDate))
                 .Select(group => group.Key)
                 .ToList();
             try

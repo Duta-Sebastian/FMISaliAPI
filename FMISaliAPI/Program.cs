@@ -35,8 +35,8 @@ using (var scope = app.Services.CreateScope())
     dbContext.Database.Migrate();
 
     // Seed schedules
-    //var seeder = new RoomScheduleSeed(dbContext);
-    //seeder.SeedSchedules();
+    // var seeder = new RoomScheduleSeed(dbContext);
+    // seeder.SeedSchedules();
 }
 
 // Configure the HTTP request pipeline.

@@ -15,14 +15,14 @@ namespace FMISaliAPI.Services
             var endDate = schedule.RecurrenceEndDate ??
                           throw new ArgumentNullException(nameof(schedule.RecurrenceEndDate));
 
-            var startOfYear = new DateTime(currentDate.Year, 1, 1);
+            var startOfYear = new DateTime(currentDate.Year, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             var startWeekNumber = (currentDate - startOfYear).Days / 7 + 1;
 
             while (currentDate <= endDate)
             {
                 var currentWeekNumber = (currentDate - startOfYear).Days / 7 + 1;
                 var relativeWeekNumber = currentWeekNumber - startWeekNumber + 1;
-
+                
                 var shouldAddEvent = schedule.Recurrence switch
                 {
                     RecurrenceType.Weekly => true,
