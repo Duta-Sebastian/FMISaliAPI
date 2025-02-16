@@ -3,37 +3,25 @@ using System.Net.Mail;
 
 namespace FMISaliAPI.Services.EmailService
 {
-    public class EmailSender : IEmailSender
+    public class EmailSender(string smtpServer, int smtpPort, string smtpUsername, string smtpPassword)
+        : IEmailSender
     {
-        private readonly string _smtpServer;
-        private readonly int _smtpPort;
-        private readonly string _smtpUsername;
-        private readonly string _smtpPassword;
-
-        public EmailSender(string smtpServer, int smtpPort, string smtpUsername, string smtpPassword)
+        private readonly SmtpClient _client = new(smtpServer, smtpPort)
         {
-            _smtpServer = smtpServer;
-            _smtpPort = smtpPort;
-            _smtpUsername = smtpUsername;
-            _smtpPassword = smtpPassword;
-        }
+            Credentials = new NetworkCredential(smtpUsername, smtpPassword),
+            EnableSsl = true
+        };
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
-            var client = new SmtpClient(_smtpServer, _smtpPort)
-            {
-                Credentials = new NetworkCredential(_smtpUsername, _smtpPassword),
-                EnableSsl = true
-            };
-            var mailMessage = new MailMessage
-            {
-                From = new MailAddress(_smtpUsername),
-                Subject = subject,
-                Body = message,
-                IsBodyHtml = true
-            };
+            using var mailMessage = new MailMessage();
+            mailMessage.From = new MailAddress(smtpUsername);
+            mailMessage.Subject = subject;
+            mailMessage.Body = message;
+            mailMessage.IsBodyHtml = true;
+
             mailMessage.To.Add(email);
-            await client.SendMailAsync(mailMessage);
+            await _client.SendMailAsync(mailMessage);
         }
     }
 }

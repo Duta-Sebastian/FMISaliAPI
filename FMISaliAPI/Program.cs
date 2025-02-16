@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddTransient<IEmailSender>(provider =>
+builder.Services.AddSingleton<IEmailSender>(provider =>
     {
         try
         {
