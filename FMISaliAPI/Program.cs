@@ -1,7 +1,34 @@
+using System.Net.Mime;
 using FMISaliAPI.Data;
+using FMISaliAPI.Services.EmailService;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddTransient<IEmailSender>(provider =>
+    {
+        try
+        {
+            var smtpServer = builder.Configuration["Smtp:Server"];
+            var smtpPort = int.Parse(builder.Configuration["Smtp:Port"] ?? "-1");
+            var smtpUsername = builder.Configuration["Smtp:Username"];
+            var smtpPassword = builder.Configuration["Smtp:Password"];
+            if (string.IsNullOrEmpty(smtpServer) || string.IsNullOrEmpty(smtpUsername) ||
+                string.IsNullOrEmpty(smtpPassword) || smtpPort == -1)
+            {
+                throw new Exception("SMTP server, port, username, and password must be provided in the configuration.");
+            }
+
+            return new EmailSender(smtpServer, smtpPort, smtpUsername, smtpPassword);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            Environment.Exit(1);
+        }
+        return null;
+    }
+);
 
 // Add services to the container.
 
