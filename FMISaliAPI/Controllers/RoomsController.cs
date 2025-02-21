@@ -1,8 +1,10 @@
 ﻿using FMISaliAPI.Data;
 using FMISaliAPI.DTO;
 using FMISaliAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web.Resource;
 
 namespace FMISaliAPI.Controllers
 {
@@ -26,6 +28,7 @@ namespace FMISaliAPI.Controllers
         }
 
         [HttpGet("getAllRooms")]
+        [Authorize(Roles = "IsStudent")]
         public async Task<IActionResult> GetAllRooms()
         {
             try

@@ -1,5 +1,9 @@
 using FMISaliAPI.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Web;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +28,23 @@ builder.Services.AddCors(options =>
             .AllowCredentials();
     });
 });
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"))
+        .EnableTokenAcquisitionToCallDownstreamApi()
+            .AddMicrosoftGraph(builder.Configuration.GetSection("MicrosoftGraph"))
+            .AddInMemoryTokenCaches()
+            .AddDownstreamApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
+            .AddInMemoryTokenCaches();
+
+builder.Services.Configure<JwtBearerOptions>(
+    JwtBearerDefaults.AuthenticationScheme, options =>
+    {
+        options.TokenValidationParameters.ValidAudience = "9287dbf2-77fd-4688-bf1b-8ff9706bbca3";
+    });
+IdentityModelEventSource.ShowPII = true;
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -51,6 +72,7 @@ app.UseCors("AllowReactFrontEnd");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

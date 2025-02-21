@@ -8,6 +8,12 @@
       "type": "postgresql.container",
       "connectionId": "ConnectionStrings:DatabaseConnection",
       "dynamicId": null
+    },
+    "identityapp1": {
+      "connectionInfo": "App registration: Dev, Tenant: Default Directory (sebiduta2004gmail.onmicrosoft.com - Microsoft Entra ID)",
+      "secretStore": "LocalSecretsFile",
+      "type": "identityapp.secretStore",
+      "connectionId": "AzureAD:ClientSecret"
     }
   }
 }
